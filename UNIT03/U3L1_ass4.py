@@ -70,7 +70,7 @@ table2 = "CREATE TABLE available_bikes \
 with con:
     cur.execute(table2)
     
-#-------------------------------------------------- AVAILABLE BIKES UPDATE ----
+#------------------------------------------------  AVAILABLE BIKES UPDATE ----
 
 #We create an entry for the execution time by inserting 
 #it into the database:
