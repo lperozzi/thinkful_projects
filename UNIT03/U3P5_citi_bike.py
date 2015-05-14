@@ -4,6 +4,9 @@ Created on Wed May 13 20:11:55 2015
 
 @author: lorenzoperozzi
 """
+
+# Why: Analyzing an hour of NYC citi bike
+# Where: https://courses.thinkful.com/data-001v2/project/3.1.5
 #--------------------------------------------------------------- PREP. DATA ---
 import pandas as pd
 import sqlite3 as lite
