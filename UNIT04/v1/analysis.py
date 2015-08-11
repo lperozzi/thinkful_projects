@@ -15,7 +15,7 @@ df.columns = cols
 
 
 # starting regression analysis using linear OLS
-model = smf.ols(formula="SALE_PRICE ~ GROSS_SQUARE_FEET", data=df) # choose total, men or women
+model = smf.ols(formula="SALE_PRICE ~ GROSS_SQUARE_FEET", data=df) 
 fitted_model = model.fit()
 coeffs = fitted_model.params
 print fitted_model.summary()
