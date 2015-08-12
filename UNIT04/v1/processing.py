@@ -7,13 +7,14 @@ import pandas as pd
 df = pd.read_excel('../data/rollingsales_manhattan.xls',skiprows=4)
 
 # selcting only entry that honor these conditions
-df = df.loc[(df["TOTAL UNITS"] != 0) & (df["LAND SQUARE FEET"] != 0) & 
-             (df["GROSS SQUARE FEET"] != 0) & (df["SALE PRICE"] != 0)]
+#df = df.loc[(df["TOTAL UNITS"] != 0) & (df["LAND SQUARE FEET"] != 0) & 
+#             (df["GROSS SQUARE FEET"] != 0) & (df["SALE PRICE"] != 0)]
 
-# dropping columns that are not interesting
-df.drop(['BOROUGH','BLOCK','LOT','EASE-MENT','APARTMENT NUMBER'],
-             inplace=True, axis=1)
-
+df = df[(df['SALE PRICE'] > 0) & (df["TOTAL UNITS"] != 0) &     
+        (df["LAND SQUARE FEET"] != 0) & 
+        (df["GROSS SQUARE FEET"] != 0)][['TOTAL UNITS','RESIDENTIAL UNITS', 
+        'COMMERCIAL UNITS', 'LAND SQUARE FEET','GROSS SQUARE FEET', 
+        'SALE PRICE','NEIGHBORHOOD']]
 
 # plotting scatter_matrix of all values
 pd.scatter_matrix(df)
