@@ -4,12 +4,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-df = pd.read_excel('../data/rollingsales_manhattan.xls',skiprows=4)
+df = pd.read_excel('data/rollingsales_manhattan.xls',skiprows=4)
 
-# selcting only entry that honor these conditions
-#df = df.loc[(df["TOTAL UNITS"] != 0) & (df["LAND SQUARE FEET"] != 0) & 
-#             (df["GROSS SQUARE FEET"] != 0) & (df["SALE PRICE"] != 0)]
-
+# selcting only entry that honor these conditions and store only interesting 
+# variables
 df = df[(df['SALE PRICE'] > 0) & (df["TOTAL UNITS"] != 0) &     
         (df["LAND SQUARE FEET"] != 0) & 
         (df["GROSS SQUARE FEET"] != 0)][['TOTAL UNITS','RESIDENTIAL UNITS', 
@@ -23,5 +21,5 @@ plt.show()
 print '''Sales price seems to be correlated with gross square meters and # of 
        total units'''
       
-      
-df.to_csv('../data/rollingsales_manhattan_processed.csv',encoding='utf-8')
+# save to disk the processed dataframe 
+df.to_csv('data/rollingsales_manhattan_processed.csv',encoding='utf-8')

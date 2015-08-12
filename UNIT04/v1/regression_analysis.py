@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import statsmodels.formula.api as smf
 
-df = pd.read_csv('../data/rollingsales_manhattan_processed.csv',encoding='utf-8')
+df = pd.read_csv('data/rollingsales_manhattan_processed.csv',encoding='utf-8')
 
 
 # replacing column name blank space with underscore to use in statsmodel formula
