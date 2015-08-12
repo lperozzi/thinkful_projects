@@ -10,10 +10,15 @@ df = pd.read_excel('data/rollingsales_manhattan.xls',skiprows=4)
 # variables
 df = df[(df['SALE PRICE'] > 0) & (df["TOTAL UNITS"] != 0) &     
         (df["LAND SQUARE FEET"] != 0) & 
-        (df["GROSS SQUARE FEET"] != 0)][['TOTAL UNITS','RESIDENTIAL UNITS', 
+        (df["GROSS SQUARE FEET"] != 0)][['TAX CLASS AT PRESENT','TAX CLASS AT TIME OF SALE','BUILDING CLASS AT PRESENT','ZIP CODE','TOTAL UNITS','RESIDENTIAL UNITS', 
         'COMMERCIAL UNITS', 'LAND SQUARE FEET','GROSS SQUARE FEET', 
         'SALE PRICE','NEIGHBORHOOD']]
+        
+#df = df[(df['SALE PRICE'] > 0)][['TOTAL UNITS','RESIDENTIAL UNITS', 
+#        'COMMERCIAL UNITS', 'LAND SQUARE FEET','GROSS SQUARE FEET', 
+#        'SALE PRICE','NEIGHBORHOOD']]
 
+#df = df[['TOTAL UNITS','RESIDENTIAL UNITS','COMMERCIAL UNITS','LAND SQUARE FEET','GROSS SQUARE FEET','SALE PRICE','NEIGHBORHOOD']]
 # plotting scatter_matrix of all values
 pd.scatter_matrix(df)
 plt.show()
