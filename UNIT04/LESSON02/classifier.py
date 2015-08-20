@@ -40,7 +40,8 @@ f = open(folder+'0008.2003-12-18.GP.spam.txt')
 raw = f.read()
 letters_only = re.sub("[^a-zA-Z]"," ",raw)
 lower_case = letters_only.lower()
-words = lower_case.split()            
+words = lower_case.split()   
+# remove stopwords from list         
 words = [w for w in words if w not in stopwords.words("english")]
 # find words that are in spam vocabulary
 words = '|'.join(words)
@@ -57,10 +58,11 @@ w0 = df_spam['log(1-theta)'].sum()
 # calculate (xi * wj)
 df_spam['xi*wj'] = df_spam['wj'] * df_spam['xi'] 
 
+print df_spam.head(10)
 
-
+print 'There is something wrong here I think'
 # calculate sum (xi*wj)
-a = df_spam['xi_2*wj'].sum()
+#a = df_spam['xi_2*wj'].sum()
 
 #b = a + w0
 
