@@ -7,8 +7,8 @@ Created on Tue Aug 25 15:35:15 2015
 import glob
 from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
+
 #setup a standard image size; this will distort some images but will get everything into the same shape
 STANDARD_SIZE = (240, 160)
 
@@ -30,7 +30,9 @@ for i, image in enumerate(landscape):
 features_l = np.array(features_l)
 # i want a (50,15) array
 s = features_l.shape[1] * features_l.shape[2]
-features_l_wide = features_l.reshape(50,s)
+features_l_wide = features_l.reshape(len(features_l),s)
+df_l = pd.DataFrame(features_l_wide, columns=["r_1","r_2","r_3","r_4","r_5","g_1","g_2","g_3","g_4","g_5","b_1","b_2","b_3","b_4","b_5"])
+df_l['image'] = 'landscape'
     
 # doing the same for headshot set
 headshot = glob.glob("data/flickr/headshot/*.jpg") # ["all the .jpg files in the folder", ]
@@ -51,4 +53,13 @@ for i, image in enumerate(headshot):
 features_h = np.array(features_l)
 # i want a (50,15) array
 s = features_h.shape[1] * features_h.shape[2]
-features_h_wide = features_h.reshape(50,s)
+features_h_wide = features_h.reshape(len(features_h),s)
+df_h = pd.DataFrame(features_h_wide, columns=["r_1","r_2","r_3","r_4","r_5","g_1","g_2","g_3","g_4","g_5","b_1","b_2","b_3","b_4","b_5"])
+df_h['image'] = 'headshot'
+
+
+frames = [df_l, df_h]
+df = pd.concat(frames)
+
+df.to_csv('data/images.csv', header=True)
+
