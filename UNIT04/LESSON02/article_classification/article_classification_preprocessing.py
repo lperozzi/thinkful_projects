@@ -14,7 +14,7 @@ def search_articles_by_section(section):
     (date,headline,section,url,word_count) to a csv file
     '''
     # defining API key 
-    api = articleAPI('''APIkeynumber''')
+    api = articleAPI('66976aea41c2e6b06066dc71da435cc4:6:72846525')
     df = pd.DataFrame()
     for i in range(1,101): # nyt api search not alllow to search behind page 10
         articles = api.search(fq = {'source':['The New York Times'],
