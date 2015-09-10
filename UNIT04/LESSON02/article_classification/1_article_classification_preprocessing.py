@@ -7,15 +7,6 @@ Created on Tue Sep  1 14:39:32 2015
 import pandas as pd
 from nytimesarticle import articleAPI
 apikey = open("api.key").readline().strip()
-# Cleaning words as  in https://www.kaggle.com/c/word2vec-nlp-tutorial/details/part-1-for-beginners-bag-of-words
-
-#from collections import defaultdict
-#from bs4 import BeautifulSoup
-#import requests
-#import json
-#import os
-#import re
-apikey = open("api.key").readline().strip()
 
 
 def search_articles_by_section(section):

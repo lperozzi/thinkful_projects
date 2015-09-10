@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 import re
 
 sections = ['Arts','Business','Obituaries','Sports','World']
-#sections = ['Arts']
 
 
 for s in range(len(sections)):
@@ -38,5 +37,10 @@ for s in range(len(sections)):
         df = pd.DataFrame(data) 
         # delate blank space (from articles that are video (empty text))
         df = df[df.body != '']
+        df['section'] = sections[s]
+#        save to csv
         df.to_csv('data/'+sections[s]+'_final.csv',mode = 'w', index=False)
+        
+
+
         
