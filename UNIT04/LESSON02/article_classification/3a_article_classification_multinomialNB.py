@@ -11,68 +11,93 @@ from textblob import TextBlob
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 import glob
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import accuracy_score
+import matplotlib.pyplot as plt
 
+###########################################  FUNCTIONS ########################
 # split body into its individual words    
 def split_into_lemmas(body):
     body = unicode(body, 'utf8')
     words = TextBlob(body).words
     # for each word, take its "base form" = lemma except for stopwords
     return [word.lemma for word in words if not word in stopwords.words('english')]
-
-sections = ['Arts','Business','Obituaries','Sports','World']
-
-
-appended_data = []
-for infile in glob.glob("data/*_final.csv"):
-    print infile
-    data = pd.read_csv(infile)
-    data = data['body'].values.tolist()
-    appended_data.append(data) ## store dataframes in list
-
-appended_data = pd.concat(appended_data, axis=1) ## see documentation for more info
-
-appended_data .to_excel('appedned.xlsx')
-
     
-    
-df_arts = pd.read_csv('data/Arts_final.csv')
-df_arts['section'] = 'Arts'
-df_business = pd.read_csv('data/Business_final.csv')
-df_business['section'] = 'Business'
-df_obituaries = pd.read_csv('data/Obituaries_final.csv')
-df_obituaries['section'] = 'Obituaries'
-df_sports = pd.read_csv('data/Sports_final.csv')
-df_sports['section'] = 'Sports'
-df_world = pd.read_csv('data/World_final.csv')
-df_world['section'] = 'World'
+def reader(f):
+    d = pd.read_csv(f)
+    d.columns = range(d.shape[1])
+    return d
 
-df = pd.concat([df_arts,df_business,df_obituaries,df_sports,df_world], axis=1) ## see documentation for more info
+##############################################################################
+# concat every section_final_csv to a unique dataframe
+files = glob.glob("data/*_final.csv")
+df = pd.concat([reader(f) for f in files], keys=files)
+# naming columns
+df.columns = ['body', 'section']
+
+# split data into training and test dataset
+art_train, art_test, label_train, label_test = train_test_split(df['body'], df['section'], test_size=0.2)
+
+#df.body.apply(split_into_lemmas)
+###############################  TRAINING DATA ################################
+
+# Bag of words transformer of the training dataset using split into lemma analyzer
+bow_transformer_train = CountVectorizer(analyzer=split_into_lemmas).fit(art_train)
+
+# Transform for the test data set using the bow_transformer
+articles_bow_train = bow_transformer_train.transform(art_train)
+print 'sparse matrix shape: {0}'.format(articles_bow_train.shape)
+print 'number of non-zeros: {0}'.format(articles_bow_train.nnz)
+print 'sparsity: {0:.2f} %'.format(100.0 * articles_bow_train.nnz / (articles_bow_train.shape[0] * articles_bow_train.shape[1]))
+
+# term weighting and normalization using TF-IDF (term frequency–inverse document frequency) 
+# for the training dataset
+tfidf_transformer_train = TfidfTransformer().fit(articles_bow_train)
+articles_tfidf_train = tfidf_transformer_train.transform(articles_bow_train)
+
+# Multinomial NB classifier 
+section_detector = MultinomialNB().fit(articles_tfidf_train, label_train)
 
 
-df.body.apply(split_into_lemmas)
+####################################  TEST DATA ###############################
+# Transform for the test data set using the same bow_transformer as for the train dataset
+articles_bow_test = bow_transformer_train.transform(art_test)
+print 'sparse matrix shape: {0}'.format(articles_bow_test.shape)
+print 'number of non-zeros: {0}'.format(articles_bow_test.nnz)
+print 'sparsity: {0:.2f} %'.format(100.0 * articles_bow_test.nnz / (articles_bow_test.shape[0] * articles_bow_test.shape[1]))
 
-bow_transformer = CountVectorizer(analyzer=split_into_lemmas).fit(df['body'])
+# term weighting and normalization using TF-IDF (term frequency–inverse document frequency) 
+# for the test dataset
+tfidf_transformer_test = TfidfTransformer().fit(articles_bow_test)
+articles_tfidf_test = tfidf_transformer_test.transform(articles_bow_test)
 
-#message4 = df['body'][3]
-#print message4
-#
-bow4 = bow_transformer.transform([message4])
-print bow4
-print bow4.shape
-#
-#print bow_transformer.get_feature_names()[55]
-#print bow_transformer.get_feature_names()[1221]
 
-messages_bow = bow_transformer.transform(df['body'])
-print 'sparse matrix shape:', messages_bow.shape
-print 'number of non-zeros:', messages_bow.nnz
-print 'sparsity: %.2f%%' % (100.0 * messages_bow.nnz / (messages_bow.shape[0] * messages_bow.shape[1]))
+# how many article of the test dataset do we classify correctly?
+articles_predictions = section_detector.predict(articles_tfidf_test)
 
-tfidf_transformer = TfidfTransformer().fit(messages_bow)
-tfidf4 = tfidf_transformer.transform(bow4)
-print tfidf4
+# Printing the accuracy results
+print 'accuracy: {0}'.format(accuracy_score(label_test, articles_predictions))
+print 'confusion matrix:\n {0}'.format(confusion_matrix(label_test, articles_predictions))
+print '(row=expected, col=predicted)'
 
-messages_tfidf = tfidf_transformer.transform(messages_bow)
-print messages_tfidf.shape
+# Plotting the confusion matrix
+plt.matshow(confusion_matrix(label_test, articles_predictions), cmap=plt.cm.binary, interpolation='nearest')
+plt.title('confusion matrix')
+plt.colorbar()
+plt.ylabel('expected label')
+plt.xlabel('predicted label')
+plt.show()
+
+
+
+
+
+
+
+
+
+
 
 
