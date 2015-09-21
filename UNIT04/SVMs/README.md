@@ -1,4 +1,4 @@
-Description of the Lesson
+Description of the lesson
 -------
 
 Classifying irises based on their characteristics and classes using Support Vector Machines (SVMs)
