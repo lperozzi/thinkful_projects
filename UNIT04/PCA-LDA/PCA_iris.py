@@ -9,13 +9,18 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA as sklearnPCA
-
+from sklearn.lda import LDA
+from sklearn.cross_validation import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
 # Load the datasets
 iris = datasets.load_iris()
 X = iris.data
 y = iris.target
+target_names = iris.target_names
+
+# original plot
 n,m = 2,3
-plt.scatter(X[:,n], X[:,m], c=y)
+X_orig = X[:,np.array([n,m])]
 
 # Standardizing
 X_std = StandardScaler().fit_transform(X)
@@ -56,11 +61,61 @@ Second component: {1:.2f}%'''.format(var_exp[0],var_exp[1]))
         
 # PCA in scikit-learn
 sklearn_pca = sklearnPCA(n_components=2) 
-y_sklearn = sklearn_pca.fit_transform(X_std)
+X_pca = sklearn_pca.fit_transform(X_std)
 
-# Compare original plot with PCA plot
+def knn_classifier(X,y,split,metric):
+#    split data set into training and testing data set
+    X_train , X_test, y_train, y_test = train_test_split(X,y, test_size=split, random_state=42)
+    
+    min_misclassification = 1.0
+    for k in range(1,20):
+        model = KNeighborsClassifier(n_neighbors=k, metric=metric) # using euclidean distance
+        model.fit(X_train, y_train)
+        misclassification = (model.predict(X_test) != y_test).mean()
+        print('k = {0} has misclassification error {1:.5f}'.format(k, misclassification))
+        if misclassification < min_misclassification:
+            min_misclassification = misclassification
+            min_k = k
+    
+# k nearest neighbour on original iris data set component
+print('Minkowski distance')
+knn_classifier(X,y,0.3,'minkowski')
+print('Manahttan distance')
+knn_classifier(X,y,0.3,'manhattan')
+print('Chebyshev distance')
+knn_classifier(X,y,0.3,'chebyshev')
+print('''\nkNN in original component is always correctly classified except 
+if we use Chebyshev or Manhattan metric distance\n''')
 
-n,m = 2,3
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(10,10))
-ax1.scatter(X[:,n], X[:,m], c=y)
-ax2.scatter(X_std[:,n],X_std[:,m], c=y_sklearn)
+# k nearest neighbour on PCA decomposed data set
+print('Euclidean distance')
+knn_classifier(X_pca,y,0.3,'euclidean')
+print('Manahttan distance')
+knn_classifier(X_pca,y,0.3,'manhattan')
+print('\nThe minimum misclassification in train set is obtained for k={0}\n'.format(min_k))
+
+# LDA in scikit-learn
+sklearn_lda = LDA(n_components=2)
+X_lda = sklearn_lda.fit_transform(X, y)
+
+titles = ['Original plot','PCA plot','LDA plot']
+def plot_comparing(X1,X2,X3,y):
+    f, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(12,5))
+    subplots_comparing(ax1,X1,y,titles[0])
+    subplots_comparing(ax2,X2,y,titles[1])
+    subplots_comparing(ax3,X3,y,titles[2])
+
+    
+ 
+def subplots_comparing(ax,X,y,title):
+    for c, i, target_name in zip("rgb", [0, 1, 2], target_names):
+        ax.scatter(X[y == i, 0], X[y == i, 1], c=c, label=target_name, alpha=0.5)
+        ax.legend()
+        ax.set_title('{0} of IRIS dataset'.format(title))
+
+
+# plotting comparing original vs PCA vs LDA iris data set
+plot_comparing(X_orig,X_pca,X_lda,y)
+plt.show()
+    
+
