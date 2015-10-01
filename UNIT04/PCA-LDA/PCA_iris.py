@@ -122,9 +122,22 @@ plot_comparing(X_orig,X_pca,X_lda,y)
 plt.show()
     
 
-# Kmeans
+# Kmeans on origina datas set
 
 km = KMeans(3) # initialize
 km.fit(X_orig)
-cluster = km.predict(X_orig)
+y_kmeans_orig = km.predict(X_orig)
+
+# plotting comparing original vs PCA vs LDA iris data set with cluster kmeans on original data set
+plot_comparing(X_orig,X_pca,X_lda,y_kmeans_orig)
+plt.show()
+
+# Kmeans on origina datas set
+km = KMeans(3) # initialize
+km.fit(X_lda)
+y_kmeans_lda = km.predict(X_lda)
+
+# plotting comparing original vs PCA vs LDA iris data set with cluster kmeans on original data set
+plot_comparing(X_orig,X_pca,X_lda,y_kmeans_lda)
+plt.show()
 
