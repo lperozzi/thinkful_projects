@@ -12,6 +12,8 @@ from sklearn.decomposition import PCA as sklearnPCA
 from sklearn.lda import LDA
 from sklearn.cross_validation import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.cluster import KMeans
+
 # Load the datasets
 iris = datasets.load_iris()
 X = iris.data
@@ -76,6 +78,7 @@ def knn_classifier(X,y,split,metric):
         if misclassification < min_misclassification:
             min_misclassification = misclassification
             min_k = k
+    return min_k
     
 # k nearest neighbour on original iris data set component
 print('Minkowski distance')
@@ -89,10 +92,10 @@ if we use Chebyshev or Manhattan metric distance\n''')
 
 # k nearest neighbour on PCA decomposed data set
 print('Euclidean distance')
-knn_classifier(X_pca,y,0.3,'euclidean')
+print('\nThe minimum misclassification in train set is obtained for k={0}\n'.format(knn_classifier(X_pca,y,0.3,'euclidean')))
 print('Manahttan distance')
-knn_classifier(X_pca,y,0.3,'manhattan')
-print('\nThe minimum misclassification in train set is obtained for k={0}\n'.format(min_k))
+#knn_classifier(X_pca,y,0.3,'manhattan')
+print('\nThe minimum misclassification in train set is obtained for k={0}\n'.format(knn_classifier(X_pca,y,0.3,'manhattan')))
 
 # LDA in scikit-learn
 sklearn_lda = LDA(n_components=2)
@@ -118,4 +121,10 @@ def subplots_comparing(ax,X,y,title):
 plot_comparing(X_orig,X_pca,X_lda,y)
 plt.show()
     
+
+# Kmeans
+
+km = KMeans(3) # initialize
+km.fit(X_orig)
+cluster = km.predict(X_orig)
 
